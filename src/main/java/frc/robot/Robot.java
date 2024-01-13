@@ -117,7 +117,7 @@ if (busUtil > 0.8) {
       //System.out.println(joyValue);
     }
 
-    double desiredRotationsPerSecond = joyValue * 50; // Go for plus/minus 10 rotations per second
+    double desiredRotationsPerSecond = joyValue * 500000; // Go for plus/minus 10 rotations per second
     if (m_joystick.getLeftBumper()) {
       /* Use voltage velocity */
       m_fx.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
