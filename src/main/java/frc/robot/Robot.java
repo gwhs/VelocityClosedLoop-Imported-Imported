@@ -24,19 +24,19 @@ import edu.wpi.first.wpilibj.XboxController;
  * project.
  */
 public class Robot extends TimedRobot {
-  private final TalonFX m_fx = new TalonFX(2, "TestCanivore");
+  private final TalonFX m_fx = new TalonFX(0);
 
   // retrieve bus utilization for the CANivore named TestCanivore
-  CANBusStatus canInfo = CANBus.getStatus("TestCanivore");
-  float busUtil = canInfo.BusUtilization;
+  // CANBusStatus canInfo = CANBus.getStatus("TestCanivore");
+  // float busUtil = canInfo.BusUtilization;
 
   
   //private final TalonFX m_fllr = new TalonFX(0);
   
   /* Be able to switch which control request to use based on a button press */
   /* Start at velocity 0, enable FOC, no feed forward, use slot 0 */
-  private final VelocityVoltage m_voltageVelocity = new VelocityVoltage( 0,0, true, 0, 0, false, false, false);
-  /* Start at velocity 0, no feed forward, use slot 1 */
+  private final VelocityVoltage m_voltageVelocity = new VelocityVoltage( 0,0, false, 0, 0, false, false, false);
+  /* Start at velocity 0, no feed forward, use slot 1 */ 
   private final VelocityTorqueCurrentFOC m_torqueVelocity = new VelocityTorqueCurrentFOC( 0, 0, 0, 0, false, false, false);
   /* Keep a neutral out so we can disable the motor */
   private final NeutralOut m_brake = new NeutralOut();
@@ -52,12 +52,12 @@ public class Robot extends TimedRobot {
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
     // retrieve bus utilization for the CANivore named TestCanivore
-  CANBusStatus canInfo = CANBus.getStatus("TestCanivore");
-  float busUtil = canInfo.BusUtilization;
+//   CANBusStatus canInfo = CANBus.getStatus("TestCanivore");
+//   float busUtil = canInfo.BusUtilization;
 
-if (busUtil > 0.8) {
-   System.out.println("CAN bus utilization is greater than 80%!");
-}
+// if (busUtil > 0.8) {
+//    System.out.println("CAN bus utilization is greater than 80%!");
+// }
 
     /* Voltage-based velocity requires a feed forward to account for the back-emf of the motor */
     configs.Slot0.kP = 0.11; // An error of 1 rotation per second results in 2V output
@@ -109,15 +109,15 @@ if (busUtil > 0.8) {
     double joyValueX = m_joystick.getLeftX();
     double joyValueY = m_joystick.getLeftY();
 
-    double joyValue = Math.sqrt(Math.pow(joyValueX,2) + Math.pow(joyValueY,2));
+    double joyValue = joyValueX + joyValueY;
 
     if (joyValue > -0.1 && joyValue < 0.1) joyValue = 0;
 
     if (m_joystick.getLeftY() > 0.0 || m_joystick.getLeftX() > 0.0) {
-      //System.out.println(joyValue);
+      //System.out.pfrintln(joyValue);
     }
 
-    double desiredRotationsPerSecond = joyValue * 500000; // Go for plus/minus 10 rotations per second
+    double desiredRotationsPerSecond = joyValue * 1000; // Go for plus/minus 10 rotations per second
     if (m_joystick.getLeftBumper()) {
       /* Use voltage velocity */
       m_fx.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
