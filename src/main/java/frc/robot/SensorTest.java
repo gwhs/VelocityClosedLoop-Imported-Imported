@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -21,41 +22,33 @@ public class SensorTest extends TimedRobot {
 
   //change motor ID as needed
   private final TalonFX m_fx = new TalonFX(0);
+  private DigitalInput topSwitch = new DigitalInput(0);
+  private DigitalInput bottomSwitch = new DigitalInput(1);
 
-  // retrieve bus utilization for the CANivore named TestCanivore
+// retrieve bus utilization for the CANivore named TestCanivore
   // CANBusStatus canInfo = CANBus.getStatus("TestCanivore");
   // float busUtil = canInfo.BusUtilization;
   
   /* Be able to switch which control request to use based on a button press */
   private final VelocityVoltage m_voltageVelocity = new VelocityVoltage( 0,0, false, 0, 0, false, false, false);
-  // /* Start at velocity 0, no feed forward, use slot 1 */ 
-  // private final VelocityTorqueCurrentFOC m_torqueVelocity = new VelocityTorqueCurrentFOC( 0, 0, 0, 0, false, false, false);
   // /* Keep a neutral out so we can disable the motor */
   private final NeutralOut m_brake = new NeutralOut();
 
   private final XboxController m_joystick = new XboxController(0);
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
   @Override
   public void robotInit() {
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
-    // retrieve bus utilization for the CANivore named TestCanivore
-//   CANBusStatus canInfo = CANBus.getStatus("TestCanivore");
-//   float busUtil = canInfo.BusUtilization;
-
-// if (busUtil > 0.8) {
-//    System.out.println("CAN bus utilization is greater than 80%!");
-// }
+    /* retrieve bus utilization for the CANivore named TestCanivore */
+    //   CANBusStatus canInfo = CANBus.getStatus("TestCanivore");
 
     /* Voltage-based velocity requires a feed forward to account for the back-emf of the motor */
     configs.Slot0.kP = 0.11; // An error of 1 rotation per second results in 2V output
     configs.Slot0.kI = 0.5; // An error of 1 rotation per second increases output by 0.5V every second
     configs.Slot0.kD = 0.0001; // A change of 1 rotation per second squared results in 0.01 volts output
     configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
+    
     // Peak output of 8 volts
     configs.Voltage.PeakForwardVoltage = 8;
     configs.Voltage.PeakReverseVoltage = -8;
@@ -78,12 +71,10 @@ public class SensorTest extends TimedRobot {
     if(!status.isOK()) {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
-
   }
 
   @Override
-  public void robotPeriodic() {
-  }
+  public void robotPeriodic() {}
 
   @Override
   public void autonomousInit() {}
@@ -112,7 +103,14 @@ public class SensorTest extends TimedRobot {
     if (m_joystick.getLeftBumper()) {
       /* Use voltage velocity */
       m_fx.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
-      //System.out.println(desiredRotationsPerSecond);
+
+      if (topSwitch.get()) {
+        System.out.println("TOP");
+      }
+      if (bottomSwitch.get()) {
+        System.out.println("BOTTOM");
+      }
+      
     }
     else {
       /* Disable the motor instead */
