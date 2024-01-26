@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj.XboxController;
  */
 public class Robot extends TimedRobot {
   private final TalonFX m_fx = new TalonFX(0);
+  private DigitalInput lightSwitch = new DigitalInput(0);
 
   // retrieve bus utilization for the CANivore named TestCanivore
   // CANBusStatus canInfo = CANBus.getStatus("TestCanivore");
@@ -117,20 +119,22 @@ public class Robot extends TimedRobot {
       //System.out.pfrintln(joyValue);
     }
 
-    double desiredRotationsPerSecond = joyValue * 1000; // Go for plus/minus 10 rotations per second
+    //double desiredRotationsPerSecond = joyValue * 10; // Go for plus/minus 10 rotations per second
     if (m_joystick.getLeftBumper()) {
       /* Use voltage velocity */
-      m_fx.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
-      System.out.println(desiredRotationsPerSecond);
-    }
-    else if (m_joystick.getRightBumper()) {
-      double friction_torque = (joyValue > 0) ? 1 : -1; // To account for friction, we add this to the arbitrary feed forward
-      /* Use torque velocity */
-      m_fx.setControl(m_torqueVelocity.withVelocity(desiredRotationsPerSecond).withFeedForward(friction_torque));
+      //m_fx.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
+
+      if (lightSwitch.get()) {
+        System.out.println("WORKING :D");
+      }
+      else {
+        System.out.println("NOT WORKING GRR");
+      }
+      
     }
     else {
       /* Disable the motor instead */
-      m_fx.setControl(m_brake);
+      //m_fx.setControl(m_brake);
     }
 
   }
