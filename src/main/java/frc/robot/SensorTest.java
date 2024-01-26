@@ -22,8 +22,7 @@ public class SensorTest extends TimedRobot {
 
   //change motor ID as needed
   private final TalonFX m_fx = new TalonFX(0);
-  private DigitalInput topSwitch = new DigitalInput(0);
-  private DigitalInput bottomSwitch = new DigitalInput(1);
+  private DigitalInput lightSwitch = new DigitalInput(0);
 
 // retrieve bus utilization for the CANivore named TestCanivore
   // CANBusStatus canInfo = CANBus.getStatus("TestCanivore");
@@ -104,11 +103,8 @@ public class SensorTest extends TimedRobot {
       /* Use voltage velocity */
       m_fx.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
 
-      if (topSwitch.get()) {
-        System.out.println("TOP");
-      }
-      if (bottomSwitch.get()) {
-        System.out.println("BOTTOM");
+      if (lightSwitch.get()) {
+        System.out.println("WORKING :D");
       }
       
     }
