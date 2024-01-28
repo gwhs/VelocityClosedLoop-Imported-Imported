@@ -36,8 +36,6 @@ public class Robot extends TimedRobot {
   /* Be able to switch which control request to use based on a button press */
   /* Start at velocity 0, enable FOC, no feed forward, use slot 0 */
   private final VelocityVoltage m_voltageVelocity = new VelocityVoltage( 0,0, false, 0, 0, false, false, false);
-  /* Start at velocity 0, no feed forward, use slot 1 */ 
-  private final VelocityTorqueCurrentFOC m_torqueVelocity = new VelocityTorqueCurrentFOC( 0, 0, 0, 0, false, false, false);
   /* Keep a neutral out so we can disable the motor */
   private final NeutralOut m_brake = new NeutralOut();
 
@@ -87,12 +85,10 @@ public class Robot extends TimedRobot {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
 
-    //m_fllr.setControl(new Follower(m_fx.getDeviceID(), false));
   }
 
   @Override
-  public void robotPeriodic() {
-  }
+  public void robotPeriodic() {}
 
   @Override
   public void autonomousInit() {}
@@ -117,16 +113,11 @@ public class Robot extends TimedRobot {
       //System.out.pfrintln(joyValue);
     }
 
-    double desiredRotationsPerSecond = joyValue * 1000; // Go for plus/minus 10 rotations per second
+    double desiredRotationsPerSecond = joyValue * 10; // Go for plus/minus 10 rotations per second
     if (m_joystick.getLeftBumper()) {
       /* Use voltage velocity */
       m_fx.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
       System.out.println(desiredRotationsPerSecond);
-    }
-    else if (m_joystick.getRightBumper()) {
-      double friction_torque = (joyValue > 0) ? 1 : -1; // To account for friction, we add this to the arbitrary feed forward
-      /* Use torque velocity */
-      m_fx.setControl(m_torqueVelocity.withVelocity(desiredRotationsPerSecond).withFeedForward(friction_torque));
     }
     else {
       /* Disable the motor instead */
