@@ -114,13 +114,13 @@ public class Robot extends TimedRobot {
     }
 
     double desiredRotationsPerSecond = joyValue * 10; // Go for plus/minus 10 rotations per second
-    if (m_joystick.getLeftBumper()) {
-      /* Use voltage velocity */
-      m_fx.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
-      System.out.println(desiredRotationsPerSecond);
-    }
-    //should hold and spin without needing left bumper
-    else if(m_joystick.getXButton()) {
+    // if (m_joystick.getLeftBumper()) {
+    //   /* Use voltage velocity */
+    //   m_fx.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
+    //   System.out.println(desiredRotationsPerSecond);
+    // }
+    //should hold and spin ; might need to hold left bumper
+    if(m_joystick.getXButton()) {
       m_fx.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
     }
     else {
