@@ -24,17 +24,17 @@ import edu.wpi.first.wpilibj.XboxController;
  * project.
  */
 public class Robot extends TimedRobot {
+  //change device id as needed
   private final TalonFX m_fx = new TalonFX(0);
 
-  // retrieve bus utilization for the CANivore named TestCanivore
+  /* retrieve bus utilization for the CANivore named TestCanivore */
   // CANBusStatus canInfo = CANBus.getStatus("TestCanivore");
   // float busUtil = canInfo.BusUtilization;
-
-  
-  //private final TalonFX m_fllr = new TalonFX(0);
-  
+ 
   /* Be able to switch which control request to use based on a button press */
   /* Start at velocity 0, enable FOC, no feed forward, use slot 0 */
+
+  /* set FOC true/false to enable */
   private final VelocityVoltage m_voltageVelocity = new VelocityVoltage( 0,0, false, 0, 0, false, false, false);
   /* Keep a neutral out so we can disable the motor */
   private final NeutralOut m_brake = new NeutralOut();
@@ -49,7 +49,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
-    // retrieve bus utilization for the CANivore named TestCanivore
+    /* retrieve bus utilization for the CANivore named TestCanivore */
 //   CANBusStatus canInfo = CANBus.getStatus("TestCanivore");
 //   float busUtil = canInfo.BusUtilization;
 
@@ -118,6 +118,10 @@ public class Robot extends TimedRobot {
       /* Use voltage velocity */
       m_fx.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
       System.out.println(desiredRotationsPerSecond);
+    }
+    //should hold and spin without needing left bumper
+    else if(m_joystick.getXButton()) {
+      m_fx.setControl(m_voltageVelocity.withVelocity(desiredRotationsPerSecond));
     }
     else {
       /* Disable the motor instead */
