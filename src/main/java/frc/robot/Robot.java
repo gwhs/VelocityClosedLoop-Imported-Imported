@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -40,6 +41,7 @@ public class Robot extends TimedRobot {
   private final NeutralOut m_brake = new NeutralOut();
 
   private final XboxController m_joystick = new XboxController(0);
+  DigitalInput toplimitSwitch = new DigitalInput(0);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -121,6 +123,9 @@ public class Robot extends TimedRobot {
     }
     else {
       /* Disable the motor instead */
+      m_fx.setControl(m_brake);
+    }
+    if(toplimitSwitch.get()) {
       m_fx.setControl(m_brake);
     }
 
