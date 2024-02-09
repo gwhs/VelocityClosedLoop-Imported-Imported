@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -30,9 +31,6 @@ public class Robot extends TimedRobot {
   /* retrieve bus utilization for the CANivore named TestCanivore */
   // CANBusStatus canInfo = CANBus.getStatus("TestCanivore");
   // float busUtil = canInfo.BusUtilization;
- 
-  /* Be able to switch which control request to use based on a button press */
-  /* Start at velocity 0, enable FOC, no feed forward, use slot 0 */
 
   /* set FOC true/false to enable */
   private final VelocityVoltage m_voltageVelocity = new VelocityVoltage( 0,0, false, 0, 0, false, false, false);
@@ -40,6 +38,7 @@ public class Robot extends TimedRobot {
   private final NeutralOut m_brake = new NeutralOut();
 
   private final XboxController m_joystick = new XboxController(0);
+  DigitalInput toplimitSwitch = new DigitalInput(0);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -48,15 +47,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     TalonFXConfiguration configs = new TalonFXConfiguration();
-
-    /* retrieve bus utilization for the CANivore named TestCanivore */
-//   CANBusStatus canInfo = CANBus.getStatus("TestCanivore");
-//   float busUtil = canInfo.BusUtilization;
-
-// if (busUtil > 0.8) {
-//    System.out.println("CAN bus utilization is greater than 80%!");
-// }
-
+    
     /* Voltage-based velocity requires a feed forward to account for the back-emf of the motor */
     configs.Slot0.kP = 0.11; // An error of 1 rotation per second results in 2V output
     configs.Slot0.kI = 0.5; // An error of 1 rotation per second increases output by 0.5V every second
@@ -84,7 +75,6 @@ public class Robot extends TimedRobot {
     if(!status.isOK()) {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
-
   }
 
   @Override
@@ -109,18 +99,14 @@ public class Robot extends TimedRobot {
 
     if (joyValue > -0.1 && joyValue < 0.1) joyValue = 0;
 
-    if (m_joystick.getLeftY() > 0.0 || m_joystick.getLeftX() > 0.0) {
-      //System.out.pfrintln(joyValue);
+    if(m_joystick.getLeftY() > 0.0) {
+      if(toplimitSwitch.get()) {
+        m_fx.setControl(m_brake);
+      }
+      else {
+        m_fx.setControl(m_voltageVelocity.withVelocity(100));
+      }
     }
-
-    if(m_joystick.getXButton()) {
-      m_fx.setControl(m_voltageVelocity.withVelocity(100));
-    }
-    else {
-      /* Disable the motor instead */
-      m_fx.setControl(m_brake);
-    }
-
   }
 
   @Override
